@@ -175,16 +175,16 @@ html, body {
       <span class="stat-dot" style="background:#64748b;"></span>2 Folders
     </div>
     <div class="stat-pill">
-      <span class="stat-dot" style="background:#3b82f6;"></span>4 Files
+      <span class="stat-dot" style="background:#3b82f6;"></span>5 Files
     </div>
     <div class="stat-pill">
-      <span class="stat-dot" style="background:#fbbf24;"></span>11 Functions
+      <span class="stat-dot" style="background:#fbbf24;"></span>14 Functions
     </div>
     <div class="stat-pill">
       <span class="stat-dot" style="background:#a78bfa;"></span>0 Internal
     </div>
     <div class="stat-pill">
-      <span class="stat-dot" style="background:#10b981;"></span>19 External
+      <span class="stat-dot" style="background:#10b981;"></span>22 External
     </div>
     <div class="stat-pill">
       <span class="stat-dot" style="background:#ef4444;"></span>0 Routes
@@ -267,38 +267,6 @@ const rawElements = [
   },
   {
     "data": {
-      "id": "queue",
-      "label": "queue",
-      "type": "external_import",
-      "weight": 1
-    }
-  },
-  {
-    "data": {
-      "id": "sounddevice",
-      "label": "sounddevice",
-      "type": "external_import",
-      "weight": 1
-    }
-  },
-  {
-    "data": {
-      "id": "numpy",
-      "label": "numpy",
-      "type": "external_import",
-      "weight": 1
-    }
-  },
-  {
-    "data": {
-      "id": "webrtcvad",
-      "label": "webrtcvad",
-      "type": "external_import",
-      "weight": 1
-    }
-  },
-  {
-    "data": {
       "id": "soundfile",
       "label": "soundfile",
       "type": "external_import",
@@ -338,6 +306,22 @@ const rawElements = [
   },
   {
     "data": {
+      "id": "numpy",
+      "label": "numpy",
+      "type": "external_import",
+      "weight": 1
+    }
+  },
+  {
+    "data": {
+      "id": "sounddevice",
+      "label": "sounddevice",
+      "type": "external_import",
+      "weight": 1
+    }
+  },
+  {
+    "data": {
       "id": "scipy",
       "label": "scipy",
       "type": "external_import",
@@ -370,6 +354,14 @@ const rawElements = [
   },
   {
     "data": {
+      "id": "indic_transliteration",
+      "label": "indic_transliteration",
+      "type": "external_import",
+      "weight": 1
+    }
+  },
+  {
+    "data": {
       "id": "faster_whisper",
       "label": "faster_whisper",
       "type": "external_import",
@@ -378,29 +370,24 @@ const rawElements = [
   },
   {
     "data": {
-      "id": "func::main.py::audio_callback",
-      "label": "audio_callback",
-      "type": "function"
+      "id": "vad_cobra.py",
+      "label": "vad_cobra.py",
+      "type": "file",
+      "weight": 2
+    }
+  },
+  {
+    "data": {
+      "id": "pvcobra",
+      "label": "pvcobra",
+      "type": "external_import",
+      "weight": 1
     }
   },
   {
     "data": {
       "id": "func::main.py::save_user_note",
       "label": "save_user_note",
-      "type": "function"
-    }
-  },
-  {
-    "data": {
-      "id": "func::main.py::clear_audio_queue",
-      "label": "clear_audio_queue",
-      "type": "function"
-    }
-  },
-  {
-    "data": {
-      "id": "func::main.py::record_until_silence",
-      "label": "record_until_silence",
       "type": "function"
     }
   },
@@ -448,8 +435,50 @@ const rawElements = [
   },
   {
     "data": {
+      "id": "func::transcribe.py::to_hinglish",
+      "label": "to_hinglish",
+      "type": "function"
+    }
+  },
+  {
+    "data": {
       "id": "func::transcribe.py::transcribe_audio",
       "label": "transcribe_audio",
+      "type": "function"
+    }
+  },
+  {
+    "data": {
+      "id": "func::vad_cobra.py::auto_select_input_device",
+      "label": "auto_select_input_device",
+      "type": "function"
+    }
+  },
+  {
+    "data": {
+      "id": "func::vad_cobra.py::normalize_audio",
+      "label": "normalize_audio",
+      "type": "function"
+    }
+  },
+  {
+    "data": {
+      "id": "func::vad_cobra.py::smart_agc",
+      "label": "smart_agc",
+      "type": "function"
+    }
+  },
+  {
+    "data": {
+      "id": "func::vad_cobra.py::record_until_silence",
+      "label": "record_until_silence",
+      "type": "function"
+    }
+  },
+  {
+    "data": {
+      "id": "func::vad_cobra.py::print_input_device",
+      "label": "print_input_device",
       "type": "function"
     }
   },
@@ -484,34 +513,6 @@ const rawElements = [
   {
     "data": {
       "source": "main.py",
-      "target": "queue",
-      "type": "file-external"
-    }
-  },
-  {
-    "data": {
-      "source": "main.py",
-      "target": "sounddevice",
-      "type": "file-external"
-    }
-  },
-  {
-    "data": {
-      "source": "main.py",
-      "target": "numpy",
-      "type": "file-external"
-    }
-  },
-  {
-    "data": {
-      "source": "main.py",
-      "target": "webrtcvad",
-      "type": "file-external"
-    }
-  },
-  {
-    "data": {
-      "source": "main.py",
       "target": "soundfile",
       "type": "file-external"
     }
@@ -520,6 +521,20 @@ const rawElements = [
     "data": {
       "source": "main.py",
       "target": "datetime",
+      "type": "file-external"
+    }
+  },
+  {
+    "data": {
+      "source": "main.py",
+      "target": "core",
+      "type": "file-external"
+    }
+  },
+  {
+    "data": {
+      "source": "main.py",
+      "target": "core",
       "type": "file-external"
     }
   },
@@ -624,35 +639,56 @@ const rawElements = [
   {
     "data": {
       "source": "transcribe.py",
+      "target": "indic_transliteration",
+      "type": "file-external"
+    }
+  },
+  {
+    "data": {
+      "source": "transcribe.py",
+      "target": "indic_transliteration",
+      "type": "file-external"
+    }
+  },
+  {
+    "data": {
+      "source": "transcribe.py",
       "target": "faster_whisper",
       "type": "file-external"
     }
   },
   {
     "data": {
-      "source": "main.py",
-      "target": "func::main.py::audio_callback",
-      "type": "file-function"
+      "source": "folder::core",
+      "target": "vad_cobra.py",
+      "type": "folder-file"
+    }
+  },
+  {
+    "data": {
+      "source": "vad_cobra.py",
+      "target": "pvcobra",
+      "type": "file-external"
+    }
+  },
+  {
+    "data": {
+      "source": "vad_cobra.py",
+      "target": "sounddevice",
+      "type": "file-external"
+    }
+  },
+  {
+    "data": {
+      "source": "vad_cobra.py",
+      "target": "numpy",
+      "type": "file-external"
     }
   },
   {
     "data": {
       "source": "main.py",
       "target": "func::main.py::save_user_note",
-      "type": "file-function"
-    }
-  },
-  {
-    "data": {
-      "source": "main.py",
-      "target": "func::main.py::clear_audio_queue",
-      "type": "file-function"
-    }
-  },
-  {
-    "data": {
-      "source": "main.py",
-      "target": "func::main.py::record_until_silence",
       "type": "file-function"
     }
   },
@@ -701,7 +737,49 @@ const rawElements = [
   {
     "data": {
       "source": "transcribe.py",
+      "target": "func::transcribe.py::to_hinglish",
+      "type": "file-function"
+    }
+  },
+  {
+    "data": {
+      "source": "transcribe.py",
       "target": "func::transcribe.py::transcribe_audio",
+      "type": "file-function"
+    }
+  },
+  {
+    "data": {
+      "source": "vad_cobra.py",
+      "target": "func::vad_cobra.py::auto_select_input_device",
+      "type": "file-function"
+    }
+  },
+  {
+    "data": {
+      "source": "vad_cobra.py",
+      "target": "func::vad_cobra.py::normalize_audio",
+      "type": "file-function"
+    }
+  },
+  {
+    "data": {
+      "source": "vad_cobra.py",
+      "target": "func::vad_cobra.py::smart_agc",
+      "type": "file-function"
+    }
+  },
+  {
+    "data": {
+      "source": "vad_cobra.py",
+      "target": "func::vad_cobra.py::record_until_silence",
+      "type": "file-function"
+    }
+  },
+  {
+    "data": {
+      "source": "vad_cobra.py",
+      "target": "func::vad_cobra.py::print_input_device",
       "type": "file-function"
     }
   }
