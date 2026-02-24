@@ -2,7 +2,7 @@ import pvcobra
 import sounddevice as sd
 import numpy as np
 
-ACCESS_KEY = "vrNHVEul9wGhrr061OLCx/DiGkJjYbcLEhzs5lAF1mFEg3BRX13XxA=="
+ACCESS_KEY = "Access_key_from_picovoice"
 
 cobra = pvcobra.create(access_key=ACCESS_KEY)
 
