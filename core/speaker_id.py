@@ -5,6 +5,10 @@ from resemblyzer import VoiceEncoder, preprocess_wav
 BASE_DIR = "data/voices"
 encoder = VoiceEncoder()
 
+UNKNOWN_THRESHOLD = 0.66
+MARGIN_THRESHOLD = 0.035
+MIN_AUDIO_SEC = 1.2
+
 
 def load_voiceprints():
     voiceprints = {}
@@ -34,19 +38,29 @@ def identify_speaker(audio_path):
         return "Unknown"
 
     wav = preprocess_wav(audio_path)
+
+    if len(wav) < 16000 * MIN_AUDIO_SEC:
+        return "Unknown"
+
     embed = encoder.embed_utterance(wav)
     embed = embed / np.linalg.norm(embed)
 
-    best_user = "Unknown"
-    best_score = -1.0
+    scores = []
 
     for user, ref_embed in VOICEPRINTS.items():
         score = cosine_similarity(embed, ref_embed)
-        if score > best_score:
-            best_score = score
-            best_user = user
+        scores.append((user, score))
 
-    if best_score < 0.70:
+    scores.sort(key=lambda x: x[1], reverse=True)
+
+    best_user, best_score = scores[0]
+
+    if len(scores) > 1:
+        second_score = scores[1][1]
+        if best_score - second_score < MARGIN_THRESHOLD:
+            return "Unknown"
+
+    if best_score < UNKNOWN_THRESHOLD:
         return "Unknown"
 
     return best_user
