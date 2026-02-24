@@ -51,7 +51,6 @@ html, body {
 
 #cy { width: 100vw; height: calc(100vh - 58px); display: block; }
 
-/* ── HAMBURGER BUTTON ─────────────────────────────────────────────────── */
 .hamburger-btn {
     position: fixed;
     right: 18px; bottom: 18px;
@@ -77,15 +76,10 @@ html, body {
     border-radius: 2px;
     transition: all 0.25s;
 }
-.hamburger-btn.open .ham-bar:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-}
+.hamburger-btn.open .ham-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .hamburger-btn.open .ham-bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
-.hamburger-btn.open .ham-bar:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
-}
+.hamburger-btn.open .ham-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* ── LEGEND PANEL ────────────────────────────────────────────────────── */
 .legend-panel {
     position: fixed;
     right: 18px; bottom: 70px;
@@ -97,10 +91,8 @@ html, body {
     line-height: 2.2;
     backdrop-filter: blur(12px);
     z-index: 29;
-    min-width: 200px;
+    min-width: 210px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-
-    /* closed state */
     opacity: 0;
     transform: translateY(12px) scale(0.97);
     pointer-events: none;
@@ -119,7 +111,6 @@ html, body {
     letter-spacing: 1px;
     margin-bottom: 4px;
 }
-.legend-section-title + br { display: none; }
 .legend-gap { margin-top: 8px; }
 
 .legend-dot {
@@ -138,7 +129,25 @@ html, body {
     border-radius: 2px;
 }
 
-/* ── ZOOM CONTROLS ───────────────────────────────────────────────────── */
+.cy-tooltip {
+    position: fixed;
+    background: rgba(10,15,30,0.97);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    line-height: 1.7;
+    pointer-events: none;
+    z-index: 100;
+    max-width: 280px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    display: none;
+}
+.cy-tooltip.visible { display: block; }
+.tt-title { font-weight: 700; color: #f1f5f9; margin-bottom: 4px; font-size: 13px; }
+.tt-row   { color: #94a3b8; }
+.tt-val   { color: #e2e8f0; }
+
 .zoom-controls {
     position: fixed; left: 18px; bottom: 18px;
     display: flex; flex-direction: column; gap: 6px;
@@ -158,87 +167,103 @@ html, body {
     user-select: none;
 }
 .zoom-btn:hover { background: #1e293b; }
+
+.search-box {
+    position: fixed; left: 18px; top: 72px;
+    z-index: 20;
+    display: flex; gap: 6px;
+}
+.search-input {
+    background: rgba(15,23,42,0.93);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #e5e7eb;
+    font-size: 12px;
+    padding: 6px 12px;
+    width: 180px;
+    outline: none;
+    backdrop-filter: blur(8px);
+}
+.search-input::placeholder { color: #475569; }
+.search-input:focus { border-color: #6366f1; }
 </style>
 </head>
 
 <body>
 <div class="header">
   <div class="header-left">
-    <div class="title">🧠 VisualTrick Architecture</div>
-    <div class="subtitle">Top-Down Repository Tree</div>
+    <div class="title">&#x1F9E0; VisualTrick Architecture</div>
+    <div class="subtitle">Deep Static Analysis &middot; Top-Down Repository Tree</div>
   </div>
-  <div class="header-stats">
-    <div class="stat-pill">
-      <span class="stat-dot" style="background:#f59e0b;"></span>1 Root
-    </div>
-    <div class="stat-pill">
-      <span class="stat-dot" style="background:#64748b;"></span>2 Folders
-    </div>
-    <div class="stat-pill">
-      <span class="stat-dot" style="background:#3b82f6;"></span>5 Files
-    </div>
-    <div class="stat-pill">
-      <span class="stat-dot" style="background:#fbbf24;"></span>14 Functions
-    </div>
-    <div class="stat-pill">
-      <span class="stat-dot" style="background:#a78bfa;"></span>0 Internal
-    </div>
-    <div class="stat-pill">
-      <span class="stat-dot" style="background:#10b981;"></span>22 External
-    </div>
-    <div class="stat-pill">
-      <span class="stat-dot" style="background:#ef4444;"></span>0 Routes
-    </div>
+  <div class="header-stats" id="headerStats">
+    <div class="stat-pill"><span class="stat-dot" style="background:#f59e0b;"></span>1 Root</div>
+<div class="stat-pill"><span class="stat-dot" style="background:#64748b;"></span>2 Folders</div>
+<div class="stat-pill"><span class="stat-dot" style="background:#3b82f6;"></span>5 Files</div>
+<div class="stat-pill"><span class="stat-dot" style="background:#818cf8;"></span>0 Classes</div>
+<div class="stat-pill"><span class="stat-dot" style="background:#fbbf24;"></span>14 Functions</div>
+<div class="stat-pill"><span class="stat-dot" style="background:#10b981;"></span>22 External</div>
   </div>
 </div>
 
 <div id="cy"></div>
 
-<!-- ZOOM CONTROLS -->
-<div class="zoom-controls">
-  <button class="zoom-btn" id="zoomIn">+</button>
-  <button class="zoom-btn" id="zoomOut">−</button>
-  <button class="zoom-btn" id="zoomReset">⊙</button>
+<div class="search-box">
+  <input class="search-input" id="searchInput" placeholder="Search nodes..." />
 </div>
 
-<!-- HAMBURGER BUTTON -->
+<div class="zoom-controls">
+  <button class="zoom-btn" id="zoomIn">+</button>
+  <button class="zoom-btn" id="zoomOut">&#x2212;</button>
+  <button class="zoom-btn" id="zoomReset">&#x2299;</button>
+</div>
+
 <button class="hamburger-btn" id="hamburgerBtn" title="Toggle Legend">
   <span class="ham-bar"></span>
   <span class="ham-bar"></span>
   <span class="ham-bar"></span>
 </button>
 
-<!-- LEGEND PANEL (hidden until hamburger clicked) -->
 <div class="legend-panel" id="legendPanel">
   <div class="legend-section-title">Nodes</div>
   <span class="legend-dot" style="background:#f59e0b;"></span> Project Root<br>
   <span class="legend-dot" style="background:#64748b;"></span> Folder<br>
   <span class="legend-dot" style="background:#3b82f6;"></span> Python File<br>
-  <span class="legend-dot" style="background:#fbbf24;"></span> Function<br>
+  <span class="legend-dot" style="background:#fbbf24;"></span> Function / Method<br>
+  <span class="legend-dot" style="background:#818cf8;"></span> Class<br>
   <span class="legend-dot" style="background:#a78bfa;"></span> Internal Import<br>
   <span class="legend-dot" style="background:#10b981;"></span> External Import<br>
   <span class="legend-dot" style="background:#ef4444;"></span> API Route<br>
   <div class="legend-gap"></div>
   <div class="legend-section-title">Edges</div>
-  <span class="legend-line" style="background:#d97706;"></span> Forward flow<br>
+  <span class="legend-line" style="background:#d97706;"></span> Structural<br>
+  <span class="legend-line" style="background:#6d28d9;"></span> Import<br>
+  <span class="legend-line" style="background:#991b1b;"></span> Route<br>
   <span class="legend-line"
         style="background: repeating-linear-gradient(90deg,#f0abfc 0,#f0abfc 8px,transparent 8px,transparent 13px);"></span> Back-edge (cycle)
 </div>
+
+<div class="cy-tooltip" id="cyTooltip"></div>
 
 <script>
 const rawElements = [
   {
     "data": {
       "id": "voice_debate_system",
-      "label": "\ud83d\udcc1 voice_debate_system",
-      "type": "root"
+      "label": "voice_debate_system",
+      "type": "root",
+      "meta": {
+        "type": "Project Root"
+      }
     }
   },
   {
     "data": {
-      "id": "folder::voice_debate_system",
-      "label": "\ud83d\udcc2 voice_debate_system",
-      "type": "folder"
+      "id": "folder::root",
+      "label": "root",
+      "type": "folder",
+      "meta": {
+        "type": "Folder"
+      }
     }
   },
   {
@@ -246,39 +271,13 @@ const rawElements = [
       "id": "main.py",
       "label": "main.py",
       "type": "file",
-      "weight": 2
-    }
-  },
-  {
-    "data": {
-      "id": "os",
-      "label": "os",
-      "type": "external_import",
-      "weight": 1
-    }
-  },
-  {
-    "data": {
-      "id": "time",
-      "label": "time",
-      "type": "external_import",
-      "weight": 1
-    }
-  },
-  {
-    "data": {
-      "id": "soundfile",
-      "label": "soundfile",
-      "type": "external_import",
-      "weight": 1
-    }
-  },
-  {
-    "data": {
-      "id": "datetime",
-      "label": "datetime",
-      "type": "external_import",
-      "weight": 1
+      "weight": 8,
+      "meta": {
+        "type": "Python File",
+        "lines": "?",
+        "docstring": "",
+        "has_main": false
+      }
     }
   },
   {
@@ -286,14 +285,31 @@ const rawElements = [
       "id": "core",
       "label": "core",
       "type": "external_import",
-      "weight": 1
+      "weight": 1,
+      "meta": {
+        "type": "External Import"
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "soundfile",
+      "label": "soundfile",
+      "type": "external_import",
+      "weight": 1,
+      "meta": {
+        "type": "External Import"
+      }
     }
   },
   {
     "data": {
       "id": "folder::core",
-      "label": "\ud83d\udcc2 core",
-      "type": "folder"
+      "label": "core",
+      "type": "folder",
+      "meta": {
+        "type": "Folder"
+      }
     }
   },
   {
@@ -301,7 +317,13 @@ const rawElements = [
       "id": "enroll.py",
       "label": "enroll.py",
       "type": "file",
-      "weight": 2
+      "weight": 5,
+      "meta": {
+        "type": "Python File",
+        "lines": "?",
+        "docstring": "",
+        "has_main": false
+      }
     }
   },
   {
@@ -309,23 +331,10 @@ const rawElements = [
       "id": "numpy",
       "label": "numpy",
       "type": "external_import",
-      "weight": 1
-    }
-  },
-  {
-    "data": {
-      "id": "sounddevice",
-      "label": "sounddevice",
-      "type": "external_import",
-      "weight": 1
-    }
-  },
-  {
-    "data": {
-      "id": "scipy",
-      "label": "scipy",
-      "type": "external_import",
-      "weight": 1
+      "weight": 1,
+      "meta": {
+        "type": "External Import"
+      }
     }
   },
   {
@@ -333,7 +342,32 @@ const rawElements = [
       "id": "resemblyzer",
       "label": "resemblyzer",
       "type": "external_import",
-      "weight": 1
+      "weight": 1,
+      "meta": {
+        "type": "External Import"
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "sounddevice",
+      "label": "sounddevice",
+      "type": "external_import",
+      "weight": 1,
+      "meta": {
+        "type": "External Import"
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "scipy",
+      "label": "scipy",
+      "type": "external_import",
+      "weight": 1,
+      "meta": {
+        "type": "External Import"
+      }
     }
   },
   {
@@ -341,7 +375,13 @@ const rawElements = [
       "id": "speaker_id.py",
       "label": "speaker_id.py",
       "type": "file",
-      "weight": 2
+      "weight": 3,
+      "meta": {
+        "type": "Python File",
+        "lines": "?",
+        "docstring": "",
+        "has_main": false
+      }
     }
   },
   {
@@ -349,15 +389,13 @@ const rawElements = [
       "id": "transcribe.py",
       "label": "transcribe.py",
       "type": "file",
-      "weight": 2
-    }
-  },
-  {
-    "data": {
-      "id": "indic_transliteration",
-      "label": "indic_transliteration",
-      "type": "external_import",
-      "weight": 1
+      "weight": 3,
+      "meta": {
+        "type": "Python File",
+        "lines": "?",
+        "docstring": "",
+        "has_main": false
+      }
     }
   },
   {
@@ -365,7 +403,21 @@ const rawElements = [
       "id": "faster_whisper",
       "label": "faster_whisper",
       "type": "external_import",
-      "weight": 1
+      "weight": 1,
+      "meta": {
+        "type": "External Import"
+      }
+    }
+  },
+  {
+    "data": {
+      "id": "indic_transliteration",
+      "label": "indic_transliteration",
+      "type": "external_import",
+      "weight": 1,
+      "meta": {
+        "type": "External Import"
+      }
     }
   },
   {
@@ -373,7 +425,13 @@ const rawElements = [
       "id": "vad_cobra.py",
       "label": "vad_cobra.py",
       "type": "file",
-      "weight": 2
+      "weight": 3,
+      "meta": {
+        "type": "Python File",
+        "lines": "?",
+        "docstring": "",
+        "has_main": false
+      }
     }
   },
   {
@@ -381,117 +439,260 @@ const rawElements = [
       "id": "pvcobra",
       "label": "pvcobra",
       "type": "external_import",
-      "weight": 1
+      "weight": 1,
+      "meta": {
+        "type": "External Import"
+      }
     }
   },
   {
     "data": {
       "id": "func::main.py::save_user_note",
       "label": "save_user_note",
-      "type": "function"
+      "type": "function",
+      "meta": {
+        "type": "Function",
+        "args": "",
+        "returns": "",
+        "decorators": [],
+        "async": false,
+        "complexity": 1,
+        "lines": "?",
+        "docstring": ""
+      }
     }
   },
   {
     "data": {
       "id": "func::main.py::debate_mode",
       "label": "debate_mode",
-      "type": "function"
+      "type": "function",
+      "meta": {
+        "type": "Function",
+        "args": "",
+        "returns": "",
+        "decorators": [],
+        "async": false,
+        "complexity": 1,
+        "lines": "?",
+        "docstring": ""
+      }
     }
   },
   {
     "data": {
       "id": "func::enroll.py::record_voice",
       "label": "record_voice",
-      "type": "function"
+      "type": "function",
+      "meta": {
+        "type": "Function",
+        "args": "",
+        "returns": "",
+        "decorators": [],
+        "async": false,
+        "complexity": 1,
+        "lines": "?",
+        "docstring": ""
+      }
     }
   },
   {
     "data": {
       "id": "func::enroll.py::enroll_user",
       "label": "enroll_user",
-      "type": "function"
+      "type": "function",
+      "meta": {
+        "type": "Function",
+        "args": "",
+        "returns": "",
+        "decorators": [],
+        "async": false,
+        "complexity": 1,
+        "lines": "?",
+        "docstring": ""
+      }
     }
   },
   {
     "data": {
       "id": "func::speaker_id.py::load_voiceprints",
       "label": "load_voiceprints",
-      "type": "function"
+      "type": "function",
+      "meta": {
+        "type": "Function",
+        "args": "",
+        "returns": "",
+        "decorators": [],
+        "async": false,
+        "complexity": 1,
+        "lines": "?",
+        "docstring": ""
+      }
     }
   },
   {
     "data": {
       "id": "func::speaker_id.py::cosine_similarity",
       "label": "cosine_similarity",
-      "type": "function"
+      "type": "function",
+      "meta": {
+        "type": "Function",
+        "args": "",
+        "returns": "",
+        "decorators": [],
+        "async": false,
+        "complexity": 1,
+        "lines": "?",
+        "docstring": ""
+      }
     }
   },
   {
     "data": {
       "id": "func::speaker_id.py::identify_speaker",
       "label": "identify_speaker",
-      "type": "function"
+      "type": "function",
+      "meta": {
+        "type": "Function",
+        "args": "",
+        "returns": "",
+        "decorators": [],
+        "async": false,
+        "complexity": 1,
+        "lines": "?",
+        "docstring": ""
+      }
     }
   },
   {
     "data": {
       "id": "func::transcribe.py::to_hinglish",
       "label": "to_hinglish",
-      "type": "function"
+      "type": "function",
+      "meta": {
+        "type": "Function",
+        "args": "",
+        "returns": "",
+        "decorators": [],
+        "async": false,
+        "complexity": 1,
+        "lines": "?",
+        "docstring": ""
+      }
     }
   },
   {
     "data": {
       "id": "func::transcribe.py::transcribe_audio",
       "label": "transcribe_audio",
-      "type": "function"
+      "type": "function",
+      "meta": {
+        "type": "Function",
+        "args": "",
+        "returns": "",
+        "decorators": [],
+        "async": false,
+        "complexity": 1,
+        "lines": "?",
+        "docstring": ""
+      }
     }
   },
   {
     "data": {
       "id": "func::vad_cobra.py::auto_select_input_device",
       "label": "auto_select_input_device",
-      "type": "function"
+      "type": "function",
+      "meta": {
+        "type": "Function",
+        "args": "",
+        "returns": "",
+        "decorators": [],
+        "async": false,
+        "complexity": 1,
+        "lines": "?",
+        "docstring": ""
+      }
     }
   },
   {
     "data": {
       "id": "func::vad_cobra.py::normalize_audio",
       "label": "normalize_audio",
-      "type": "function"
+      "type": "function",
+      "meta": {
+        "type": "Function",
+        "args": "",
+        "returns": "",
+        "decorators": [],
+        "async": false,
+        "complexity": 1,
+        "lines": "?",
+        "docstring": ""
+      }
     }
   },
   {
     "data": {
       "id": "func::vad_cobra.py::smart_agc",
       "label": "smart_agc",
-      "type": "function"
+      "type": "function",
+      "meta": {
+        "type": "Function",
+        "args": "",
+        "returns": "",
+        "decorators": [],
+        "async": false,
+        "complexity": 1,
+        "lines": "?",
+        "docstring": ""
+      }
     }
   },
   {
     "data": {
       "id": "func::vad_cobra.py::record_until_silence",
       "label": "record_until_silence",
-      "type": "function"
+      "type": "function",
+      "meta": {
+        "type": "Function",
+        "args": "",
+        "returns": "",
+        "decorators": [],
+        "async": false,
+        "complexity": 1,
+        "lines": "?",
+        "docstring": ""
+      }
     }
   },
   {
     "data": {
       "id": "func::vad_cobra.py::print_input_device",
       "label": "print_input_device",
-      "type": "function"
+      "type": "function",
+      "meta": {
+        "type": "Function",
+        "args": "",
+        "returns": "",
+        "decorators": [],
+        "async": false,
+        "complexity": 1,
+        "lines": "?",
+        "docstring": ""
+      }
     }
   },
   {
     "data": {
       "source": "voice_debate_system",
-      "target": "folder::voice_debate_system",
+      "target": "folder::root",
       "type": "root-folder"
     }
   },
   {
     "data": {
-      "source": "folder::voice_debate_system",
+      "source": "folder::root",
       "target": "main.py",
       "type": "folder-file"
     }
@@ -499,14 +700,14 @@ const rawElements = [
   {
     "data": {
       "source": "main.py",
-      "target": "os",
+      "target": "core",
       "type": "file-external"
     }
   },
   {
     "data": {
       "source": "main.py",
-      "target": "time",
+      "target": "core",
       "type": "file-external"
     }
   },
@@ -514,34 +715,6 @@ const rawElements = [
     "data": {
       "source": "main.py",
       "target": "soundfile",
-      "type": "file-external"
-    }
-  },
-  {
-    "data": {
-      "source": "main.py",
-      "target": "datetime",
-      "type": "file-external"
-    }
-  },
-  {
-    "data": {
-      "source": "main.py",
-      "target": "core",
-      "type": "file-external"
-    }
-  },
-  {
-    "data": {
-      "source": "main.py",
-      "target": "core",
-      "type": "file-external"
-    }
-  },
-  {
-    "data": {
-      "source": "main.py",
-      "target": "core",
       "type": "file-external"
     }
   },
@@ -569,14 +742,14 @@ const rawElements = [
   {
     "data": {
       "source": "enroll.py",
-      "target": "os",
+      "target": "numpy",
       "type": "file-external"
     }
   },
   {
     "data": {
       "source": "enroll.py",
-      "target": "numpy",
+      "target": "resemblyzer",
       "type": "file-external"
     }
   },
@@ -596,23 +769,9 @@ const rawElements = [
   },
   {
     "data": {
-      "source": "enroll.py",
-      "target": "resemblyzer",
-      "type": "file-external"
-    }
-  },
-  {
-    "data": {
       "source": "folder::core",
       "target": "speaker_id.py",
       "type": "folder-file"
-    }
-  },
-  {
-    "data": {
-      "source": "speaker_id.py",
-      "target": "os",
-      "type": "file-external"
     }
   },
   {
@@ -639,21 +798,21 @@ const rawElements = [
   {
     "data": {
       "source": "transcribe.py",
-      "target": "indic_transliteration",
-      "type": "file-external"
-    }
-  },
-  {
-    "data": {
-      "source": "transcribe.py",
-      "target": "indic_transliteration",
-      "type": "file-external"
-    }
-  },
-  {
-    "data": {
-      "source": "transcribe.py",
       "target": "faster_whisper",
+      "type": "file-external"
+    }
+  },
+  {
+    "data": {
+      "source": "transcribe.py",
+      "target": "indic_transliteration",
+      "type": "file-external"
+    }
+  },
+  {
+    "data": {
+      "source": "transcribe.py",
+      "target": "indic_transliteration",
       "type": "file-external"
     }
   },
@@ -674,14 +833,14 @@ const rawElements = [
   {
     "data": {
       "source": "vad_cobra.py",
-      "target": "sounddevice",
+      "target": "numpy",
       "type": "file-external"
     }
   },
   {
     "data": {
       "source": "vad_cobra.py",
-      "target": "numpy",
+      "target": "sounddevice",
       "type": "file-external"
     }
   },
@@ -785,17 +944,13 @@ const rawElements = [
   }
 ];
 
-// ── Hamburger toggle ──────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   const btn   = document.getElementById('hamburgerBtn');
   const panel = document.getElementById('legendPanel');
-
   btn.addEventListener('click', () => {
     const isOpen = panel.classList.toggle('open');
     btn.classList.toggle('open', isOpen);
   });
-
-  // click outside to close
   document.addEventListener('click', (e) => {
     if (!btn.contains(e.target) && !panel.contains(e.target)) {
       panel.classList.remove('open');
@@ -804,7 +959,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// ── Detect back-edges ─────────────────────────────────────────────────────────
 function detectBackEdges(elements) {
   const children = {};
   elements.forEach(el => {
@@ -813,38 +967,29 @@ function detectBackEdges(elements) {
       children[el.data.source].push(el.data.target);
     }
   });
-
-  const visited  = new Set();
-  const inStack  = new Set();
-  const backKeys = new Set();
-
+  const visited = new Set(), inStack = new Set(), backKeys = new Set();
   function dfs(node) {
     visited.add(node); inStack.add(node);
     for (const nb of (children[node] || [])) {
-      if (!visited.has(nb))        dfs(nb);
-      else if (inStack.has(nb))    backKeys.add(`${node}->${nb}`);
+      if (!visited.has(nb)) dfs(nb);
+      else if (inStack.has(nb)) backKeys.add(node + '->' + nb);
     }
     inStack.delete(node);
   }
-
   const hasIncoming = new Set(
     elements.filter(e => e.data && e.data.source).map(e => e.data.target)
   );
   elements
     .filter(e => e.data && e.data.id && !hasIncoming.has(e.data.id))
     .forEach(e => { if (!visited.has(e.data.id)) dfs(e.data.id); });
-
   elements.forEach(el => {
-    if (el.data && el.data.source && el.data.target) {
-      if (backKeys.has(`${el.data.source}->${el.data.target}`))
+    if (el.data && el.data.source && el.data.target)
+      if (backKeys.has(el.data.source + '->' + el.data.target))
         el.data.isBackEdge = true;
-    }
   });
-
   return elements;
 }
 
-// ── Responsive scale (height-driven = tall graph) ────────────────────────────
 function getScale() {
   const vh = window.innerHeight - 58;
   return Math.max(0.35, Math.min(1.6, vh / 900));
@@ -853,8 +998,8 @@ function getScale() {
 function measureText(text, fontSize) {
   const canvas = document.createElement('canvas');
   const ctx    = canvas.getContext('2d');
-  ctx.font     = `600 ${fontSize}px Inter, system-ui, Arial`;
-  const words  = (text || '').replace(/[📁📂]/gu, '').trim().split(/[._\-\/\s]/);
+  ctx.font     = '600 ' + fontSize + 'px Inter, system-ui, Arial';
+  const words  = (text || '').replace(/[\u{1F4C1}\u{1F4C2}\u26A1\u{1F537}\u{1F6AB}\u{1F4CB}\u{1F310}\u{1F3A8}\u{1F40D}]/gu, '').trim().split(/[._\-\/\s]/);
   const longest = words.reduce((a, b) => a.length > b.length ? a : b, '');
   return ctx.measureText(longest).width;
 }
@@ -864,6 +1009,7 @@ const BASE = {
   folder:          { fontSize: 12, minSize:  96, pad: 28 },
   file:            { fontSize: 12, minSize:  96, pad: 30 },
   function:        { fontSize: 10, minSize:  64, pad: 20 },
+  class:           { fontSize: 11, minSize:  72, pad: 22 },
   internal_import: { fontSize: 11, minSize:  78, pad: 24 },
   external_import: { fontSize: 11, minSize:  78, pad: 24 },
   route:           { fontSize: 10, minSize:  78, pad: 22 },
@@ -876,11 +1022,11 @@ function buildElements(scale) {
     if (!el.data || !el.data.type || el.data.target !== undefined) return;
     const cfg = BASE[el.data.type];
     if (!cfg) return;
-    const fs    = cfg.fontSize * scale;
-    const pad   = cfg.pad      * scale;
-    const minS  = cfg.minSize  * scale;
-    const textW = measureText(el.data.label || '', fs);
-    el.data.size     = Math.max(minS, textW + pad * 2);
+    const fs   = cfg.fontSize * scale;
+    const pad  = cfg.pad      * scale;
+    const minS = cfg.minSize  * scale;
+    const tw   = measureText(el.data.label || '', fs);
+    el.data.size     = Math.max(minS, tw + pad * 2);
     el.data.fontSize = fs;
   });
   return els;
@@ -908,201 +1054,132 @@ function buildLayout(scale) {
 function buildStyle(scale) {
   const bw = (n) => Math.max(1, n * scale);
   return [
-    {
-      selector: 'node[type="root"]',
-      style: {
+    { selector: 'node[type="root"]', style: {
         shape: 'ellipse',
         'background-fill': 'linear-gradient',
         'background-gradient-stop-colors': '#fbbf24 #b45309',
         'background-gradient-direction': 'to-bottom',
         label: 'data(label)',
-        'font-size': `${BASE.root.fontSize * scale}px`,
+        'font-size': (BASE.root.fontSize * scale) + 'px',
         'font-weight': '700', color: '#fff',
         'text-valign': 'center', 'text-halign': 'center',
         'text-wrap': 'wrap', 'text-max-width': 'data(size)',
         width: 'data(size)', height: 'data(size)',
         'border-width': bw(3), 'border-color': '#fde68a',
-      }
-    },
-    {
-      selector: 'node[type="folder"]',
-      style: {
+    }},
+    { selector: 'node[type="folder"]', style: {
         shape: 'ellipse',
         'background-fill': 'linear-gradient',
         'background-gradient-stop-colors': '#94a3b8 #1e293b',
         'background-gradient-direction': 'to-bottom',
         label: 'data(label)',
-        'font-size': `${BASE.folder.fontSize * scale}px`,
+        'font-size': (BASE.folder.fontSize * scale) + 'px',
         'font-weight': '600', color: '#f1f5f9',
         'text-valign': 'center', 'text-halign': 'center',
         'text-wrap': 'wrap', 'text-max-width': 'data(size)',
         width: 'data(size)', height: 'data(size)',
         'border-width': bw(2), 'border-color': '#64748b',
-      }
-    },
-    {
-      selector: 'node[type="file"]',
-      style: {
+    }},
+    { selector: 'node[type="file"]', style: {
         shape: 'ellipse',
         'background-fill': 'linear-gradient',
         'background-gradient-stop-colors': '#60a5fa #1e3a8a',
         'background-gradient-direction': 'to-bottom',
         label: 'data(label)',
-        'font-size': `${BASE.file.fontSize * scale}px`,
+        'font-size': (BASE.file.fontSize * scale) + 'px',
         'font-weight': '600', color: '#e2e8f0',
         'text-valign': 'center', 'text-halign': 'center',
         'text-wrap': 'wrap', 'text-max-width': 'data(size)',
         width: 'data(size)', height: 'data(size)',
         'border-width': bw(2), 'border-color': '#93c5fd',
-      }
-    },
-    {
-      selector: 'node[type="function"]',
-      style: {
+    }},
+    { selector: 'node[type="function"]', style: {
         shape: 'ellipse',
         'background-fill': 'linear-gradient',
         'background-gradient-stop-colors': '#fde68a #d97706',
         'background-gradient-direction': 'to-bottom',
         label: 'data(label)',
-        'font-size': `${BASE.function.fontSize * scale}px`,
+        'font-size': (BASE.function.fontSize * scale) + 'px',
         'font-weight': '500', color: '#1c1917',
         'text-valign': 'center', 'text-halign': 'center',
         'text-wrap': 'wrap', 'text-max-width': 'data(size)',
         width: 'data(size)', height: 'data(size)',
         'border-width': bw(1.5), 'border-color': '#fbbf24',
-      }
-    },
-    {
-      selector: 'node[type="internal_import"]',
-      style: {
+    }},
+    { selector: 'node[type="class"]', style: {
+        shape: 'ellipse',
+        'background-fill': 'linear-gradient',
+        'background-gradient-stop-colors': '#818cf8 #3730a3',
+        'background-gradient-direction': 'to-bottom',
+        label: 'data(label)',
+        'font-size': (BASE.class.fontSize * scale) + 'px',
+        'font-weight': '600', color: '#e0e7ff',
+        'text-valign': 'center', 'text-halign': 'center',
+        'text-wrap': 'wrap', 'text-max-width': 'data(size)',
+        width: 'data(size)', height: 'data(size)',
+        'border-width': bw(2), 'border-color': '#a5b4fc',
+    }},
+    { selector: 'node[type="internal_import"]', style: {
         shape: 'ellipse',
         'background-fill': 'linear-gradient',
         'background-gradient-stop-colors': '#c4b5fd #5b21b6',
         'background-gradient-direction': 'to-bottom',
         label: 'data(label)',
-        'font-size': `${BASE.internal_import.fontSize * scale}px`,
+        'font-size': (BASE.internal_import.fontSize * scale) + 'px',
         'font-weight': '500', color: '#ede9fe',
         'text-valign': 'center', 'text-halign': 'center',
         'text-wrap': 'wrap', 'text-max-width': 'data(size)',
         width: 'data(size)', height: 'data(size)',
         'border-width': bw(1.5), 'border-color': '#a78bfa',
-      }
-    },
-    {
-      selector: 'node[type="external_import"]',
-      style: {
+    }},
+    { selector: 'node[type="external_import"]', style: {
         shape: 'ellipse',
         'background-fill': 'linear-gradient',
         'background-gradient-stop-colors': '#34d399 #064e3b',
         'background-gradient-direction': 'to-bottom',
         label: 'data(label)',
-        'font-size': `${BASE.external_import.fontSize * scale}px`,
+        'font-size': (BASE.external_import.fontSize * scale) + 'px',
         'font-weight': '500', color: '#d1fae5',
         'text-valign': 'center', 'text-halign': 'center',
         'text-wrap': 'wrap', 'text-max-width': 'data(size)',
         width: 'data(size)', height: 'data(size)',
         'border-width': bw(1.5), 'border-color': '#6ee7b7',
-      }
-    },
-    {
-      selector: 'node[type="route"]',
-      style: {
+    }},
+    { selector: 'node[type="route"]', style: {
         shape: 'ellipse',
         'background-fill': 'linear-gradient',
         'background-gradient-stop-colors': '#f87171 #7f1d1d',
         'background-gradient-direction': 'to-bottom',
         label: 'data(label)',
-        'font-size': `${BASE.route.fontSize * scale}px`,
+        'font-size': (BASE.route.fontSize * scale) + 'px',
         'font-weight': '600', color: '#fff',
         'text-valign': 'center', 'text-halign': 'center',
         'text-wrap': 'wrap', 'text-max-width': 'data(size)',
         width: 'data(size)', height: 'data(size)',
         'border-width': bw(2), 'border-color': '#fca5a5',
-      }
-    },
-
-    // ── Forward edges ─────────────────────────────────────────────────────
-    {
-      selector: 'edge[type="root-folder"]',
-      style: {
-        width: bw(2.2), 'line-color': '#d97706',
-        'target-arrow-color': '#fbbf24', 'target-arrow-shape': 'triangle',
-        'curve-style': 'bezier', opacity: 0.85,
-      }
-    },
-    {
-      selector: 'edge[type="folder-file"]',
-      style: {
-        width: bw(1.8), 'line-color': '#475569',
-        'target-arrow-color': '#94a3b8', 'target-arrow-shape': 'triangle',
-        'curve-style': 'bezier', opacity: 0.8,
-      }
-    },
-    {
-      selector: 'edge[type="root-file"]',
-      style: {
-        width: bw(1.8), 'line-color': '#92400e',
-        'target-arrow-color': '#fbbf24', 'target-arrow-shape': 'triangle',
-        'curve-style': 'bezier', opacity: 0.8,
-      }
-    },
-    {
-      selector: 'edge[type="file-function"]',
-      style: {
-        width: bw(1.4), 'line-color': '#92400e',
-        'target-arrow-color': '#fde68a', 'target-arrow-shape': 'triangle',
-        'curve-style': 'bezier', opacity: 0.75,
-      }
-    },
-    {
-      selector: 'edge[type="file-internal"]',
-      style: {
-        width: bw(1.5), 'line-color': '#6d28d9',
-        'target-arrow-color': '#c4b5fd', 'target-arrow-shape': 'triangle',
-        'curve-style': 'bezier', opacity: 0.8,
-      }
-    },
-    {
-      selector: 'edge[type="file-external"]',
-      style: {
-        width: bw(1.5), 'line-color': '#1e40af',
-        'target-arrow-color': '#93c5fd', 'target-arrow-shape': 'triangle',
-        'curve-style': 'bezier', opacity: 0.8,
-      }
-    },
-    {
-      selector: 'edge[type="file-route"]',
-      style: {
-        width: bw(1.5), 'line-color': '#991b1b',
-        'target-arrow-color': '#fca5a5', 'target-arrow-shape': 'triangle',
-        'curve-style': 'bezier', opacity: 0.8,
-      }
-    },
-
-    // ── Back-edges — hot pink dashed ──────────────────────────────────────
-    {
-      selector: 'edge[?isBackEdge]',
-      style: {
-        width: bw(2),
-        'line-color': '#f0abfc',
-        'line-style': 'dashed',
-        'line-dash-pattern': [8, 5],
-        'target-arrow-color': '#f0abfc',
-        'target-arrow-shape': 'triangle',
-        'source-arrow-color': '#f0abfc',
-        'source-arrow-shape': 'circle',
-        'curve-style': 'unbundled-bezier',
-        'control-point-distances': [80],
-        'control-point-weights': [0.5],
-        opacity: 0.9,
-        'z-index': 999,
-      }
-    },
-
-    // ── States ────────────────────────────────────────────────────────────
-    { selector: '.faded',        style: { opacity: 0.07 } },
-    { selector: '.highlighted',  style: { opacity: 1    } },
-    { selector: 'node:selected', style: { 'border-width': bw(4), 'border-color': '#facc15' } },
+    }},
+    { selector: 'edge[type="root-folder"]', style: { width: bw(2.2), 'line-color': '#d97706', 'target-arrow-color': '#fbbf24', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', opacity: 0.85 }},
+    { selector: 'edge[type="folder-file"]', style: { width: bw(1.8), 'line-color': '#475569', 'target-arrow-color': '#94a3b8', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', opacity: 0.8 }},
+    { selector: 'edge[type="root-file"]',   style: { width: bw(1.8), 'line-color': '#92400e', 'target-arrow-color': '#fbbf24', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', opacity: 0.8 }},
+    { selector: 'edge[type="file-function"]', style: { width: bw(1.4), 'line-color': '#92400e', 'target-arrow-color': '#fde68a', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', opacity: 0.75 }},
+    { selector: 'edge[type="file-class"]',    style: { width: bw(1.5), 'line-color': '#3730a3', 'target-arrow-color': '#a5b4fc', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', opacity: 0.8 }},
+    { selector: 'edge[type="class-method"]',  style: { width: bw(1.2), 'line-color': '#4338ca', 'target-arrow-color': '#818cf8', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', opacity: 0.7 }},
+    { selector: 'edge[type="file-internal"]', style: { width: bw(1.5), 'line-color': '#6d28d9', 'target-arrow-color': '#c4b5fd', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', opacity: 0.8 }},
+    { selector: 'edge[type="file-external"]', style: { width: bw(1.5), 'line-color': '#1e40af', 'target-arrow-color': '#93c5fd', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', opacity: 0.8 }},
+    { selector: 'edge[type="file-route"]',    style: { width: bw(1.5), 'line-color': '#991b1b', 'target-arrow-color': '#fca5a5', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', opacity: 0.8 }},
+    { selector: 'edge[type="cross-call"]',    style: { width: bw(1.3), 'line-color': '#0891b2', 'target-arrow-color': '#67e8f9', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', opacity: 0.7, 'line-style': 'dashed', 'line-dash-pattern': [5, 4] }},
+    { selector: 'edge[?isBackEdge]', style: {
+        width: bw(2), 'line-color': '#f0abfc', 'line-style': 'dashed', 'line-dash-pattern': [8, 5],
+        'target-arrow-color': '#f0abfc', 'target-arrow-shape': 'triangle',
+        'source-arrow-color': '#f0abfc', 'source-arrow-shape': 'circle',
+        'curve-style': 'unbundled-bezier', 'control-point-distances': [80],
+        'control-point-weights': [0.5], opacity: 0.9, 'z-index': 999,
+    }},
+    { selector: '.faded',        style: { opacity: 0.07 }},
+    { selector: '.highlighted',  style: { opacity: 1    }},
+    { selector: 'node:selected', style: { 'border-width': bw(4), 'border-color': '#facc15' }},
+    { selector: '.search-match', style: { 'border-width': bw(4), 'border-color': '#facc15', opacity: 1 }},
+    { selector: '.search-dim',   style: { opacity: 0.12 }},
   ];
 }
 
@@ -1122,35 +1199,59 @@ function initCy() {
   cy.minZoom(0.04);
   cy.maxZoom(5.0);
 
-  cy.one('layoutstop', () => {
-    cy.fit(undefined, Math.round(60 * scale));
-    cy.center();
-  });
+  cy.one('layoutstop', () => { cy.fit(undefined, Math.round(60 * scale)); cy.center(); });
 
-  document.getElementById('zoomIn').onclick = () =>
-    cy.zoom({ level: cy.zoom() * 1.25, renderedPosition: { x: cy.width()/2, y: cy.height()/2 }});
-  document.getElementById('zoomOut').onclick = () =>
-    cy.zoom({ level: cy.zoom() * 0.8,  renderedPosition: { x: cy.width()/2, y: cy.height()/2 }});
-  document.getElementById('zoomReset').onclick = () => {
-    cy.fit(undefined, Math.round(60 * scale));
-    cy.center();
-  };
+  document.getElementById('zoomIn').onclick    = () => cy.zoom({ level: cy.zoom() * 1.25, renderedPosition: { x: cy.width()/2, y: cy.height()/2 }});
+  document.getElementById('zoomOut').onclick   = () => cy.zoom({ level: cy.zoom() * 0.8,  renderedPosition: { x: cy.width()/2, y: cy.height()/2 }});
+  document.getElementById('zoomReset').onclick = () => { cy.fit(undefined, Math.round(60 * scale)); cy.center(); };
 
   cy.on('mouseover', 'node', e => {
     cy.elements().addClass('faded');
     e.target.closedNeighborhood().removeClass('faded').addClass('highlighted');
   });
-  cy.on('mouseout', 'node', () => {
-    cy.elements().removeClass('faded highlighted');
+  cy.on('mouseout', 'node', () => cy.elements().removeClass('faded highlighted'));
+
+  const tooltip = document.getElementById('cyTooltip');
+  cy.on('mouseover', 'node', e => {
+    const d = e.target.data();
+    if (!d.meta) return;
+    const m = d.meta;
+    let rows = '<div class="tt-title">' + (d.label || d.id) + '</div>';
+    if (m.type)        rows += '<span class="tt-row">Type: </span><span class="tt-val">' + m.type + '</span><br>';
+    if (m.lines)       rows += '<span class="tt-row">Lines: </span><span class="tt-val">' + m.lines + '</span><br>';
+    if (m.complexity !== undefined) rows += '<span class="tt-row">Complexity: </span><span class="tt-val">' + m.complexity + '</span><br>';
+    if (m.args)        rows += '<span class="tt-row">Args: </span><span class="tt-val">' + m.args + '</span><br>';
+    if (m.returns)     rows += '<span class="tt-row">Returns: </span><span class="tt-val">' + m.returns + '</span><br>';
+    if (m.decorators && m.decorators.length) rows += '<span class="tt-row">Decorators: </span><span class="tt-val">' + m.decorators.join(', ') + '</span><br>';
+    if (m.bases && m.bases.length) rows += '<span class="tt-row">Inherits: </span><span class="tt-val">' + m.bases.join(', ') + '</span><br>';
+    if (m.docstring)   rows += '<span class="tt-row">Doc: </span><span class="tt-val">' + m.docstring.slice(0, 80) + (m.docstring.length > 80 ? '...' : '') + '</span><br>';
+    if (m.async)       rows += '<span class="tt-val" style="color:#34d399;">async</span><br>';
+    tooltip.innerHTML = rows;
+    tooltip.classList.add('visible');
+  });
+  cy.on('mousemove', e => {
+    tooltip.style.left = (e.originalEvent.clientX + 14) + 'px';
+    tooltip.style.top  = (e.originalEvent.clientY + 14) + 'px';
+  });
+  cy.on('mouseout', 'node', () => tooltip.classList.remove('visible'));
+
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    cy.elements().removeClass('search-match search-dim');
+    if (!q) return;
+    const matches = cy.nodes().filter(n =>
+      (n.data('label') || '').toLowerCase().includes(q) ||
+      (n.data('id')    || '').toLowerCase().includes(q)
+    );
+    if (matches.length === 0) return;
+    cy.nodes().addClass('search-dim');
+    matches.removeClass('search-dim').addClass('search-match');
   });
 }
 
 let resizeTimer = null;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(initCy, 250);
-});
-
+window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(initCy, 250); });
 window.addEventListener('DOMContentLoaded', initCy);
 </script>
 </body>
